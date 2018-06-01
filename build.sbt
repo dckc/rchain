@@ -177,6 +177,22 @@ rpmPrerequisites := Seq("java-1.8.0-openjdk-headless >= 1.8.0.171",
   )
   .dependsOn(casper, comm, crypto, rholang)
 
+val Http4sVersion = "0.18.12"
+val Specs2Version = "4.2.0"
+val LogbackVersion = "1.2.3"
+
+lazy val nodeUI = (project in file("node-client"))
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.http4s"      %% "http4s-blaze-server" % Http4sVersion,
+      "org.http4s"      %% "http4s-circe"        % Http4sVersion,
+      "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
+      "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
+      "ch.qos.logback"  %  "logback-classic"     % LogbackVersion
+    ))
+  .dependsOn(models, node)
+
 lazy val regex = (project in file("regex"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies)
@@ -288,4 +304,4 @@ lazy val rspaceBench = (project in file("rspace-bench"))
 
 lazy val rchain = (project in file("."))
   .settings(commonSettings: _*)
-  .aggregate(casper, crypto, comm, models, regex, rspace, node, rholang, rholangCLI, roscala)
+  .aggregate(casper, crypto, comm, models, regex, rspace, node, nodeUI, rholang, rholangCLI, roscala)

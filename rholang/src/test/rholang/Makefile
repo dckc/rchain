@@ -1,6 +1,6 @@
 # USAGE: scala link.scala <libraryDirectory> <rholangSource> [<rholangSource> ...]
-# RHOLINK=scala ../../../examples/linking/link.scala
-RHOLINK=node ~/projects/rchain.cloud/linking/target/scala-2.12/rholang-linker-fastopt.js
+RHOLINK=scala ../../../examples/linking/link.scala
+# RHOLINK=node ~/projects/rchain.cloud/linking/target/scala-2.12/rholang-linker-fastopt.js
 
 check: happyPath1.rho.linked
 	rnode eval $<

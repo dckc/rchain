@@ -1,24 +1,13 @@
-import BallotFactory in {
+import BallotFactory, MockRegistry in {
   new stdout(`rho:io:stdout`), stderr(`rho:io:stderr`) in {
     stdout!("hello, world!")
+    |
+    @`rho:registry`!!(*MockRegistry)
     |
     new ballotOut in {
       @[*BallotFactory, "create"]!(Set(), 1, 1, *stdout, *ballotOut) | for (@ballot <- ballotOut) {
         stdout!(["ballot:", ballot])
       }
-    }
-    |
-    // mock registry
-    new registry in {
-      contract @[*registry, "register"](scheme, sink, ret) = {
-        new uuid, unregisterToken in {
-          ret!([*uuid.toByteArray(), *unregisterToken])
-          |
-          stderr!(["@@registry scheme:", *scheme, "returning:", [*uuid.toByteArray(), *unregisterToken]])
-        }
-      }
-      |
-      @`rho:registry`!!(*registry)
     }
   }
 }

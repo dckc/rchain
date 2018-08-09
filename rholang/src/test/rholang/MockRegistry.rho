@@ -1,0 +1,11 @@
+export MockRegistry in {
+  new stderr(`rho:io:stderr`) in {
+    contract @[*MockRegistry, "register"](scheme, sink, ret) = {
+      new uuid, unregisterToken in {
+        ret!([*uuid.toByteArray(), *unregisterToken])
+        |
+        stderr!(["@@registry scheme:", *scheme, "returning:", [*uuid.toByteArray(), *unregisterToken]])
+      }
+    }
+  }
+}

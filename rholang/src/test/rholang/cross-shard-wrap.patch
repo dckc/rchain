@@ -1,5 +1,5 @@
 --- ../../main/rholang/cross-shard.rho	2018-08-08 21:06:47.959396010 -0500
-+++ CrossShard.rho	2018-08-08 22:58:01.134067298 -0500
++++ CrossShard.rho	2018-08-08 23:50:45.244982620 -0500
 @@ -1,4 +1,9 @@
 -new BallotFactory, LockoutFactory, MailBoxFactory, DepositoryFactory, MintFactory, r/*(`rho:registry`)*/ in {
 +export CrossShard in {
@@ -11,6 +11,15 @@
    // create: create a ballot
    //
    //  Set<bytearray> pubKeySet: set of public keys allowed to vote on this ballot
+@@ -51,7 +56,7 @@
+                 } else {
+                   // check the signature
+                   new ret in {
+-                    verify!([*ballot, candidate, *statusOut].toByteArray(), sig, pubKey, *ret) |
++                    @"ed25519Verify"!([*ballot, candidate, *statusOut].toByteArray(), sig, pubKey, *ret) |
+                     for (@verifyResult <- ret) {
+                       if (not verifyResult) {
+                         votedSetStore!(votedSet) |
 @@ -506,8 +511,8 @@
      }
    }

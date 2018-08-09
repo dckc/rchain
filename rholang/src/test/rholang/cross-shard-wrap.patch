@@ -1,0 +1,19 @@
+--- BallotFactory.rho	2018-08-08 21:06:47.959396010 -0500
++++ BallotFactory.rho	2018-08-08 21:52:37.705295717 -0500
+@@ -1,4 +1,4 @@
+-new BallotFactory, LockoutFactory, MailBoxFactory, DepositoryFactory, MintFactory, r/*(`rho:registry`)*/ in {
++export BallotFactory in { new LockoutFactory, MailBoxFactory, DepositoryFactory, MintFactory in { for (r <- @`rho:registry`) {
+   // create: create a ballot
+   //
+   //  Set<bytearray> pubKeySet: set of public keys allowed to vote on this ballot
+@@ -506,8 +506,8 @@
+     }
+   }
+ }
+-
+-
++}
++}
+ 
+ 
+ 

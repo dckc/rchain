@@ -5,12 +5,12 @@ RHOLINK=node ~/projects/rchain.cloud/linking/target/scala-2.12/rholang-linker-fa
 check: happyPath1.rho.linked
 	rnode eval $<
 
-happyPath1.rho.linked: happyPath1.rho BallotFactory.rho MockRegistry.rho
+happyPath1.rho.linked: happyPath1.rho CrossShard.rho MockRegistry.rho
 	$(RHOLINK) . $<
 
-BallotFactory.rho: ../../main/rholang/cross-shard.rho cross-shard-wrap.patch
-	cp $< BallotFactory.rho
-	patch -i cross-shard-wrap.patch BallotFactory.rho
+CrossShard.rho: ../../main/rholang/cross-shard.rho cross-shard-wrap.patch
+	cp $< $@
+	patch -i cross-shard-wrap.patch $@
 
 clean:
-	rm -f BallotFactory.rho happyPath1.rho.linked
+	rm -f CrossShard.rho happyPath1.rho.linked

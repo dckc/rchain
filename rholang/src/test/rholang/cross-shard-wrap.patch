@@ -1,12 +1,17 @@
---- BallotFactory.rho	2018-08-08 21:06:47.959396010 -0500
-+++ BallotFactory.rho	2018-08-08 21:52:37.705295717 -0500
-@@ -1,4 +1,4 @@
+--- ../../main/rholang/cross-shard.rho	2018-08-08 21:06:47.959396010 -0500
++++ CrossShard.rho	2018-08-08 22:58:01.134067298 -0500
+@@ -1,4 +1,9 @@
 -new BallotFactory, LockoutFactory, MailBoxFactory, DepositoryFactory, MintFactory, r/*(`rho:registry`)*/ in {
-+export BallotFactory in { new LockoutFactory, MailBoxFactory, DepositoryFactory, MintFactory in { for (r <- @`rho:registry`) {
++export CrossShard in {
++new BallotFactory, LockoutFactory, MailBoxFactory, DepositoryFactory, MintFactory in { for (r <- @`rho:registry`) {
++  contract CrossShard(ret) = {
++    ret!([*BallotFactory, *LockoutFactory, *MailBoxFactory, *DepositoryFactory, *MintFactory])
++  }
++  |
    // create: create a ballot
    //
    //  Set<bytearray> pubKeySet: set of public keys allowed to vote on this ballot
-@@ -506,8 +506,8 @@
+@@ -506,8 +511,8 @@
      }
    }
  }

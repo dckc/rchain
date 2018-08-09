@@ -1,12 +1,18 @@
-import BallotFactory, MockRegistry in {
+import CrossShard, MockRegistry in {
   new stdout(`rho:io:stdout`), stderr(`rho:io:stderr`) in {
     stdout!("hello, world!")
     |
     @`rho:registry`!!(*MockRegistry)
     |
-    new ballotOut in {
-      @[*BallotFactory, "create"]!(Set(), 1, 1, *stdout, *ballotOut) | for (@ballot <- ballotOut) {
-        stdout!(["ballot:", ballot])
+    new partsCh in {
+      CrossShard!(*partsCh) | for(@[BallotFactory, _, _, _, _] <- partsCh) {
+        new ballotOut in {
+          @[BallotFactory, "create"]!(Set(), 1, 1, *stdout, *ballotOut)
+          |
+          for (@ballot <- ballotOut) {
+            stdout!(["ballot:", ballot])
+          }
+        }
       }
     }
   }

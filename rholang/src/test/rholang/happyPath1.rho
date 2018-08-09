@@ -8,7 +8,7 @@
 // a misnomer, as we're mostly testing failure modes of "vote".  When
 // we understand the happy path better, these should move elsewhere.
 //
-import CrossShard, MockRegistry in {
+import CrossShard, MockRegistry, TestCase in {
   new stdout(`rho:io:stdout`), stderr(`rho:io:stderr`) in {
     stdout!("hello, world!")
     |
@@ -35,16 +35,13 @@ import CrossShard, MockRegistry in {
           |
 
           for (@ballot <- ballotOut) {
-            stdout!(["ballot:", ballot])
+            TestCase!("ballot", ballot != Nil, true)
             |
-            // Typically we would make a new channel for the result of voting,
-            // but we have to sign it, so we have to use a ground term -- a constant.
-            // Aren't sends to these supposed to get dropped at the Casper layer?
-            // I don't see how singing the return channel can work.
+            // ISSUE: using a public name for the return channel, which is signed
             new statusOut in {
               @[ballot, "vote"]!("bogus key", "candidate1", *statusOut, "bogus sig") |
               for (@status <- statusOut) {
-                stderr!(["@@vote should fail due to Invalid Key:", status])
+                TestCase!("Invalid Key", status, ["failure", "Invalid key."])
               }
             }
             |
@@ -68,7 +65,7 @@ import CrossShard, MockRegistry in {
                 *statusOut,
                 "3122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c80882410793122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079".hexToBytes()) |
               for (@status <- statusOut) {
-                stderr!(["@@incorrect sig, right?", status])
+                TestCase!("Incorrect sig", status, ["failure", "Invalid signature."])
               }
             }
           }

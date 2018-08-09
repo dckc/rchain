@@ -1,0 +1,12 @@
+export TestCase in {
+  new stdout(`rho:io:stdout`) in {
+    contract TestCase(@label, @actual, @expected) = {
+      if (actual == expected) {
+        stdout!(["pass:", label])
+      } else {
+        stdout!(["FAIL:", label, {"expected": expected, "actual": actual }])
+      }
+    }
+  }
+}
+

@@ -5,7 +5,7 @@ RHOLINK=scala ../../../examples/linking/link.scala
 check: happyPath1.rho.linked
 	rnode eval $<
 
-happyPath1.rho.linked: happyPath1.rho CrossShard.rho MockRegistry.rho
+happyPath1.rho.linked: happyPath1.rho CrossShard.rho MockRegistry.rho TestCase.rho
 	$(RHOLINK) . $<
 
 CrossShard.rho: ../../main/rholang/cross-shard.rho cross-shard-wrap.patch

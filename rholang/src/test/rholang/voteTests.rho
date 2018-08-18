@@ -1,0 +1,56 @@
+// Testing failure modes of "vote".  When we understand the
+// happy path better, these should move elsewhere.
+new ballotOut in {
+  @[BallotFactory, "create"]!(
+    Set(
+      "3122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079".hexToBytes(),
+      // "secretKey": "8758868e01e7dc8c51dc93092716c54336e5ce389479b7e7813520cfa58b89033122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079"
+      "90685cf270025cddab375b3de595e9b87548c5f05f9e5bf17502d7cfcb7259f7".hexToBytes(),
+      // "secretKey": "9217509f61d80a69627daad29796774d1b65d06e70762aa114e9aa534c0d76bb90685cf270025cddab375b3de595e9b87548c5f05f9e5bf17502d7cfcb7259f7"
+      "155d6fbdc9d0520575012f9a03a90c41f0736be9a4fcfe4d5e5b5574faee365a".hexToBytes(),
+      // "secretKey": "364691c05b4f872a616bc0660eb215094ba17314a7502aff61bd549bde2e800e155d6fbdc9d0520575012f9a03a90c41f0736be9a4fcfe4d5e5b5574faee365a"
+
+      // Keep these around for when we're ready to do 5.
+      // "publicKey": "d44306bc8e56d0f9885d2f75fec5ce72d1967faa1370a4c02e642b31c5ffdce5",
+      // "secretKey": "9465edcbeea7b161f84aecf86156307e237ecf975401a3f2b7ab1c4ace1c9df1d44306bc8e56d0f9885d2f75fec5ce72d1967faa1370a4c02e642b31c5ffdce5"
+      // "publicKey": "409be04879b812c83c4ccad7a39cb8433f6dd90d523360491d09be58385b6d33",
+      // "secretKey": "998e70da87cc270ee4b7bde1676a4c30918e25bbd1aa616425eb803710e94785409be04879b812c83c4ccad7a39cb8433f6dd90d523360491d09be58385b6d33"
+    ), 1, 1, *stdout, *ballotOut)
+  |
+
+  for (@ballot <- ballotOut) {
+    TestCase!("ballot", ballot != Nil, true)
+    |
+    // ISSUE: using a public name for the return channel, which is signed
+    new statusOut in {
+      @[ballot, "vote"]!("bogus key", "candidate1", *statusOut, "bogus sig") |
+      for (@status <- statusOut) {
+        TestCase!("Invalid Key", status, ["failure", "Invalid key."])
+      }
+    }
+    |
+
+    // @[ballot, "vote"] never returns in this case:
+    // Errors received during evaluation:
+    // java.lang.IllegalArgumentException: ed25519Verify expects data, signature and public key (all as byte arrays) and ack channel as arguments
+    new statusOut in {
+      @[ballot, "vote"]!("3122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079".hexToBytes(), "candidate1", *statusOut, "bogus sig") |
+      for (@status <- statusOut) {
+        stderr!(["@@bogus sig: what to expect?", status])
+      }
+    }
+    |
+
+    // correct 64 byte format, but wrong signature
+    new statusOut in {
+      @[ballot, "vote"]!(
+        "3122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079".hexToBytes(),
+        "candidate1",
+        *statusOut,
+        "3122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c80882410793122c39dbd785d3bada0b8445c07d401af931646d4a5d486bc6e2c8088241079".hexToBytes()) |
+      for (@status <- statusOut) {
+        TestCase!("Incorrect sig", status, ["failure", "Invalid signature."])
+      }
+    }
+  }
+}

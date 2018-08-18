@@ -62,10 +62,16 @@ import CrossShard, MockRegistry, TestCase in {
             *depCh) | for (@dep1 <- depCh) {
             stderr!(["@@depository:", dep1]) |
 
-            @[dep1, "sendToChild"]!(sendPurse,
-              "d44306bc8e56d0f9885d2f75fec5ce72d1967faa1370a4c02e642b31c5ffdce5".hexToBytes(), *statusCh) |
-            for (@status <- statusCh) {
-              stderr!(["sendToChild status:", status])
+            new ballotCh in {
+              @[*MockRegistry, "getLast"]!(*ballotCh) | for (@ballot <- ballotCh) {
+                stderr!(["ballot?", ballot]) |
+
+                @[dep1, "sendToChild"]!(sendPurse,
+                  "d44306bc8e56d0f9885d2f75fec5ce72d1967faa1370a4c02e642b31c5ffdce5".hexToBytes(), *statusCh) |
+                for (@status <- statusCh) {
+                  stderr!(["sendToChild status:", status])
+                }
+              }
             }
           }
         }
